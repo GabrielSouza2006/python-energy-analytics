@@ -1,0 +1,21 @@
+# Ambientes virtuais
+venv/
+env/
+ENV/
+
+# Dados (Big Data)
+data/*.csv
+data/*.parquet
+data/*.txt
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Configurações de editores
+.vscode/
+.idea/
+
+# Arquivos de log e sistema
+*.log
+.DS_Store

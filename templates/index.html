@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Análise Big Data - Energia</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; text-align: center; margin: 0; padding: 20px; }
+        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 250px; }
+        .valor { font-size: 32px; font-weight: bold; color: #2980b9; display: block; margin-top: 10px; }
+        .grafico-container { background: white; margin-top: 30px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
+        img { max-width: 100%; height: auto; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dashboard Energético Residencial</h1>
+        <p>Análise de dados minuto a minuto (2006-2010)</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <strong>Consumo Médio Global</strong>
+            <span class="valor">{{ media_web }} kW</span>
+        </div>
+        <div class="card">
+            <strong>Pico de Consumo</strong>
+            <span class="valor">{{ pico_web }} kW</span>
+        </div>
+    </div>
+
+    <div class="grafico-container">
+        <h3>Distribuição de Energia por Setor</h3>
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de Consumo">
+    </div>
+</body>
+</html>
