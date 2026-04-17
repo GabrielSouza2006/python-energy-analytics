@@ -25,6 +25,13 @@ O projeto segue uma estrutura modular para facilitar a manutenção e escalabili
 2.  **Cálculo de Métricas**: Calcula a média de consumo global e identifica picos de demanda energética.
 3.  **Visualização por Setor**: Compara o consumo acumulado entre Cozinha, Lavanderia e Climatização através de gráficos de barras dinâmicos.
 
+## 📂 Fonte dos Dados
+
+O dataset utilizado foi o **Individual Household Electric Power Consumption**, disponibilizado pelo **UCI Machine Learning Repository**.
+
+* **Link para download:** [Clique aqui para acessar o dataset](https://archive.ics.uci.edu/ml/datasets/individual+household+electric+power+consumption)
+* **Descrição:** Contém 2.075.259 medições recolhidas entre dezembro de 2006 e novembro de 2010.
+
 ## 🔧 Como Rodar o Projeto
 
 1. **Clone o repositório:**
