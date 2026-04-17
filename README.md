@@ -44,9 +44,9 @@ O dataset utilizado foi o **Individual Household Electric Power Consumption**, d
    pip install -r requirements.txt
 
 3. **Preparando os dados**
-   Baixe o dataset neste link da UCI.
-   Extraia o arquivo .zip.
-   Mova o arquivo household_power_consumption.csv para a pasta data/ do projeto.
+   * Baixe o dataset neste link da UCI.
+   * Extraia o arquivo .zip.
+   * Mova o arquivo household_power_consumption.csv para a pasta data/ do projeto.
 
 4. **Inicie a aplicação**
    ```bash
