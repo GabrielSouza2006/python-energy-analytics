@@ -31,3 +31,6 @@ O projeto segue uma estrutura modular para facilitar a manutenção e escalabili
    ```bash
    git clone https://github.com/GabrielSouza2006/python-energy-analytics.git
    cd python-energy-analytics
+
+2. **Instale as dependências**
+   pip install -r requirements.txt

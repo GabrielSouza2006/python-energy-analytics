@@ -13,6 +13,7 @@ class DataEngine:
         # Colunas que queremos converter para números
         cols = ['Global_active_power', 'Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3']
         
+        # Converte as colunas para numéricas pois todos os dados vem como strings, forçando erros a NaN
         for col in cols:
             df[col] = pd.to_numeric(df[col], errors='coerce')
         

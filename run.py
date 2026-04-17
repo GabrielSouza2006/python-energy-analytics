@@ -5,7 +5,7 @@ from src.graph_generator import plot_to_base64
 app = Flask(__name__)
 
 # Instancia o motor de dados (apontando para a pasta data/)
-# Ajuste o caminho se seu arquivo estiver em outro local
+# Ajuste o caminho se seu arquivo estiver em outro local, se não achar o arquivo o motor vai travar
 engine = DataEngine('data/household_power_consumption.csv')
 
 @app.route('/')
@@ -17,6 +17,7 @@ def home():
     # Gera o gráfico baseado nas somas
     grafico = plot_to_base64(list(sums.keys()), list(sums.values()))
     
+    # Renderiza a página HTML passando as estatísticas e o gráfico
     return render_template('index.html', 
                            media_web=f"{stats['media']:.2f}", 
                            pico_web=f"{stats['pico']:.2f}",

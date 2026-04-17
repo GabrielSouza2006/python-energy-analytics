@@ -17,7 +17,7 @@ def plot_to_base64(nomes, valores):
     plt.savefig(img, format='png', bbox_inches='tight')
     img.seek(0)
     
-    # Converte para base64
+    # Converte para base64 para embutir no HTML
     plot_url = base64.b64encode(img.getvalue()).decode('utf-8')
     plt.close()
     return plot_url
