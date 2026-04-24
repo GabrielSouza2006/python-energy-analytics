@@ -1,38 +1,527 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Análise Big Data - Energia</title>
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; text-align: center; margin: 0; padding: 20px; }
-        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-        .container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 250px; }
-        .valor { font-size: 32px; font-weight: bold; color: #2980b9; display: block; margin-top: 10px; }
-        .grafico-container { background: white; margin-top: 30px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
-        img { max-width: 100%; height: auto; border-radius: 8px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energy Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── Reset & Variáveis ────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0F1117;
+      --surface: #1A1D27;
+      --surface2: #22263A;
+      --border: #2A2D3A;
+      --text: #E0E4F0;
+      --muted: #6B7080;
+      --accent: #4A9EFF;
+      --accent2: #00D4AA;
+      --accent3: #FF6B6B;
+      --accent4: #FFB347;
+      --radius: 10px;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .header p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(0, 212, 170, 0.12);
+      border: 1px solid rgba(0, 212, 170, 0.35);
+      color: var(--accent2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    /* ── Layout ───────────────────────────────────────── */
+    .main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ── Section Title ────────────────────────────────── */
+    .section-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Cards de Estatísticas ────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--card-accent, var(--accent));
+      border-radius: var(--radius) var(--radius) 0 0;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--card-accent, var(--accent));
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--text);
+      margin: 8px 0 4px;
+      line-height: 1;
+    }
+
+    .stat-unit {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .stat-icon {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      font-size: 1.4rem;
+      opacity: 0.2;
+    }
+
+    /* ── Picos de Carga ───────────────────────────────── */
+    .peaks-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .peaks-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .peaks-table th {
+      background: var(--surface2);
+      padding: 12px 20px;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .peaks-table td {
+      padding: 12px 20px;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .peaks-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .peaks-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .rank-badge {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      text-align: center;
+      line-height: 21px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .rank-badge.top1 {
+      background: rgba(255, 179, 71, 0.15);
+      border-color: var(--accent4);
+      color: var(--accent4);
+    }
+
+    .rank-badge.top2 {
+      background: rgba(74, 158, 255, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .rank-badge.top3 {
+      background: rgba(0, 212, 170, 0.15);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* ── Gráficos ─────────────────────────────────────── */
+    .charts-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chart-card:hover {
+      border-color: rgba(74, 158, 255, 0.4);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .chart-card h3 {
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .chart-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .chart-full {
+      /* ocupa largura total */
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 0;
+      transition: border-color 0.2s ease;
+    }
+
+    .chart-full:hover {
+      border-color: rgba(74, 158, 255, 0.4);
+    }
+
+    .chart-full h3 {
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .chart-full img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    /* ── Footer ───────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      padding: 32px 24px 0;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Responsividade ───────────────────────────────── */
+    @media (max-width: 720px) {
+      .header {
+        padding: 14px 18px;
+      }
+
+      .main {
+        padding: 20px 16px;
+      }
+
+      .stat-value {
+        font-size: 1.6rem;
+      }
+
+      .charts-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="header">
-        <h1>Dashboard Energético Residencial</h1>
-        <p>Análise de dados minuto a minuto (2006-2010)</p>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-icon">⚡</div>
+      <div>
+        <h1>Energy Analytics</h1>
+        <p>UCI Household Power Consumption · 2006–2010</p>
+      </div>
+    </div>
+    <div class="status-badge">LIVE DATA</div>
+  </header>
+
+  <main class="main">
+
+    <!-- ── Estatísticas ── -->
+    <p class="section-title">Estatísticas Globais</p>
+    <div class="stats-grid">
+
+      <div class="stat-card" style="--card-accent: var(--accent);">
+        <span class="stat-icon">⚡</span>
+        <div class="stat-label">Consumo Médio</div>
+        <div class="stat-value">{{ "%.3f"|format(stats.media) }}</div>
+        <div class="stat-unit">kW</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: var(--accent3);">
+        <span class="stat-icon">📈</span>
+        <div class="stat-label">Pico de Demanda</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.pico) }}</div>
+        <div class="stat-unit">kW</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: var(--accent2);">
+        <span class="stat-icon">〜</span>
+        <div class="stat-label">Mediana</div>
+        <div class="stat-value">{{ "%.3f"|format(stats.mediana) }}</div>
+        <div class="stat-unit">kW</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: var(--accent4);">
+        <span class="stat-icon">σ</span>
+        <div class="stat-label">Desvio Padrão</div>
+        <div class="stat-value">{{ "%.3f"|format(stats.desvio) }}</div>
+        <div class="stat-unit">kW</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: var(--muted);">
+        <span class="stat-icon">🗂</span>
+        <div class="stat-label">Registros Analisados</div>
+        <div class="stat-value" style="font-size:1.5rem;">{{ "{:,}".format(stats.total_registros) }}</div>
+        <div class="stat-unit">medições</div>
+      </div>
+
     </div>
 
-    <div class="container">
-        <div class="card">
-            <strong>Consumo Médio Global</strong>
-            <span class="valor">{{ media_web }} kW</span>
-        </div>
-        <div class="card">
-            <strong>Pico de Consumo</strong>
-            <span class="valor">{{ pico_web }} kW</span>
-        </div>
+    <!-- ── Horários de Pico ── -->
+    <p class="section-title">Top Horários de Pico</p>
+    <div class="peaks-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Horário</th>
+            <th>Consumo Médio (kW)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in peaks %}
+          <tr>
+            <td>
+              {# loop.index0 é o índice começando em 0. loop.index começa em 1 #}
+              <span
+                class="rank-badge {% if loop.index0 == 0 %}top1{% elif loop.index0 == 1 %}top2{% elif loop.index0 == 2 %}top3{% endif %}">
+                {{ loop.index }}
+              </span>
+            </td>
+            <td>{{ p.hora }}</td>
+            <td>{{ p.media_kw }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
-    <div class="grafico-container">
-        <h3>Distribuição de Energia por Setor</h3>
-        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de Consumo">
+    <!-- ── Gráfico de Linha (largura total) ── -->
+    <p class="section-title">Perfil de Consumo por Hora</p>
+    <div class="chart-full">
+      <h3>Consumo Médio · 24 Horas</h3>
+      <img src="data:image/png;base64,{{ graficos.linha_hora }}" alt="Consumo por hora" loading="lazy" />
     </div>
+
+    <!-- ── Grade de Gráficos ── -->
+    <p class="section-title">Análise por Setor e Período</p>
+    <div class="charts-grid-2">
+
+      <div class="chart-card">
+        <h3>Consumo Acumulado · Setor</h3>
+        <img src="data:image/png;base64,{{ graficos.barras }}" alt="Setores" loading="lazy" />
+      </div>
+
+      <div class="chart-card">
+        <h3>Consumo Médio · Período do Dia</h3>
+        <img src="data:image/png;base64,{{ graficos.periodos }}" alt="Períodos" loading="lazy" />
+      </div>
+
+      <div class="chart-card">
+        <h3>Matriz de Correlação · Sub-medições</h3>
+        <img src="data:image/png;base64,{{ graficos.correlacao }}" alt="Correlação" loading="lazy" />
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Fonte: <a href="https://archive.ics.uci.edu/ml/datasets/individual+household+electric+power+consumption"
+      target="_blank">
+      UCI Machine Learning Repository
+    </a> · Dados de 2006–2010
+  </footer>
+
 </body>
+
 </html>
